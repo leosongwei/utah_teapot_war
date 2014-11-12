@@ -109,9 +109,9 @@ void moving_all_bullet()
 			(*bullet_current).y += (*bullet_current).v_y;
 
 			// Shutdown bullet
-			if( ((*bullet_current).x >= 410) ||
+			if( ((*bullet_current).x >= 480) ||
 				((*bullet_current).x <= -410) ||
-				((*bullet_current).y >= 210) ||
+				((*bullet_current).y >= 250) ||
 				((*bullet_current).y <= -210) ){
 				(*bullet_current).alivep=0;
 			}
@@ -185,15 +185,15 @@ void create_enemy
 }
 
 void create_enemy_randomly(){
-	int y_rand = rand()%400 - 200;
-	create_enemy(400, y_rand,
+	int y_rand = rand()%480 - 260;
+	create_enemy(500, y_rand,
 			-6, 0,
-			0, 50);
+			0, 80);
 }
 
 int game_time=0;
 void enemy_generator(){
-	if(game_time<300){
+	if(game_time<120){
 		game_time += 5;
 	}
 
@@ -203,7 +203,7 @@ void enemy_generator(){
 	int i=0;
 	int c=0;
 	int fip=0;
-	int limit=5+game_time/12;
+	int limit=5+game_time/3;
 	while(i<=200){
 		int slot=rand()%50;
 		if(gen_arry[slot]==0){
@@ -251,10 +251,10 @@ void moving_all_enemy()
 			vector_enemy[i].y += vector_enemy[i].v_y;
 
 			// Shutdown enemy
-			if( (vector_enemy[i].x >= 410) ||
-				(vector_enemy[i].x <= -410) ||
-				(vector_enemy[i].y >= 210) ||
-				(vector_enemy[i].y <= -210) ||
+			if( (vector_enemy[i].x >= 510) ||
+				(vector_enemy[i].x <= -510) ||
+				(vector_enemy[i].y >= 280) ||
+				(vector_enemy[i].y <= -280) ||
 				(vector_enemy[i].hp<=0) )
 			{
 				create_flare(vector_enemy[i].x,
