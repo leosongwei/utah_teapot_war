@@ -489,33 +489,61 @@ void init(void)
 	glShadeModel (GL_FLAT);
 }
 
+void teapot_location_limiter(float speed_x, float speed_y){
+	/*
+	if( (teapot_location_x>=-380) && (teapot_location_x <= 380) ){
+		teapot_location_x += speed_x;
+	}
+	if( (teapot_location_y>=-180) && (teapot_location_y <= 200) ){
+		teapot_location_y += speed_y;
+	}
+	*/
+
+	if( (speed_x>0) && (teapot_location_x>380) ) speed_x = 0;
+	if( (speed_x<0) && (teapot_location_x<-380)) speed_x = 0;
+
+	if( (speed_y>0) && (teapot_location_y>180) ) speed_y = 0;
+	if( (speed_y<0) && (teapot_location_y<-180)) speed_y = 0;
+
+	teapot_location_x += speed_x;
+	teapot_location_y += speed_y;
+}
+
 void move_teapot(void)
 {
-	int teapot_moving_speed = 9;
-	int teapot_moving_speed_s = 7;
+	float teapot_moving_speed = 9;
+	float teapot_moving_speed_s = 7;
 
 	if( keys['w'] && keys['a'] ){
-		teapot_location_x -= teapot_moving_speed_s;
-		teapot_location_y += teapot_moving_speed_s;
+		teapot_location_limiter(-teapot_moving_speed_s, +teapot_moving_speed_s);
+		//teapot_location_x -= teapot_moving_speed_s;
+		//teapot_location_y += teapot_moving_speed_s;
 	}else if( keys['w'] && keys['d'] ){
-		teapot_location_x += teapot_moving_speed_s;
-		teapot_location_y += teapot_moving_speed_s;
+		teapot_location_limiter(+teapot_moving_speed_s, +teapot_moving_speed_s);
+		//teapot_location_x += teapot_moving_speed_s;
+		//teapot_location_y += teapot_moving_speed_s;
 	}else if( keys['s'] && keys['a'] ){
-		teapot_location_x -= teapot_moving_speed_s;
-		teapot_location_y -= teapot_moving_speed_s;
+		teapot_location_limiter(-teapot_moving_speed_s, -teapot_moving_speed_s);
+		//teapot_location_x -= teapot_moving_speed_s;
+		//teapot_location_y -= teapot_moving_speed_s;
 	}else if( keys['s'] && keys['d'] ){
-		teapot_location_x += teapot_moving_speed_s;
-		teapot_location_y -= teapot_moving_speed_s;
+		teapot_location_limiter(+teapot_moving_speed_s, -teapot_moving_speed_s);
+		//teapot_location_x += teapot_moving_speed_s;
+		//teapot_location_y -= teapot_moving_speed_s;
 	}
 	//single
 	else if(keys['w']){
-		teapot_location_y += teapot_moving_speed;
+		teapot_location_limiter(0, +teapot_moving_speed);
+		//teapot_location_y += teapot_moving_speed;
 	}else if(keys['s']){
-		teapot_location_y -= teapot_moving_speed;
+		teapot_location_limiter(0, -teapot_moving_speed);
+		//teapot_location_y -= teapot_moving_speed;
 	}else if(keys['a']){
-		teapot_location_x -= teapot_moving_speed;
+		teapot_location_limiter(-teapot_moving_speed, 0);
+		//teapot_location_x -= teapot_moving_speed;
 	}else if(keys['d']){
-		teapot_location_x += teapot_moving_speed;
+		teapot_location_limiter(+teapot_moving_speed, 0);
+		//teapot_location_x += teapot_moving_speed;
 	}else{
 		return;
 	}
