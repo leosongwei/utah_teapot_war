@@ -283,6 +283,7 @@ void show_enemy_all(){
 	}
 }
 
+int kill_counter=0;
 void check_enemy_health_all(){
 	for(int i=0;i<MAX_NUM_ENEMY;i++){
 		if((vector_enemy[i].hp<=0)&&(vector_enemy[i].alivep)){
@@ -290,6 +291,7 @@ void check_enemy_health_all(){
 					vector_enemy[i].y,
 					50, 100, 300);
 			vector_enemy[i].alivep=0;
+			kill_counter++;
 		}
 	}
 }
@@ -456,6 +458,7 @@ void game_reset(){
 	teapot_location_y = 0;
 	teapot_alivep = 1;
 	game_time = 0;
+	kill_counter = 0;
 }
 
 void display(void)
