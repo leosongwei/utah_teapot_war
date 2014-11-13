@@ -254,12 +254,8 @@ void moving_all_enemy()
 			if( (vector_enemy[i].x >= 510) ||
 				(vector_enemy[i].x <= -510) ||
 				(vector_enemy[i].y >= 280) ||
-				(vector_enemy[i].y <= -280) ||
-				(vector_enemy[i].hp<=0) )
+				(vector_enemy[i].y <= -280) )
 			{
-				create_flare(vector_enemy[i].x,
-						vector_enemy[i].y,
-						50, 100, 300);
 				vector_enemy[i].alivep=0;
 			}
 		}
@@ -284,6 +280,17 @@ void show_enemy(struct enemy *enemy_current){
 void show_enemy_all(){
 	for(int i=0;i<MAX_NUM_ENEMY;i++){
 		show_enemy( &vector_enemy[i]);
+	}
+}
+
+void check_enemy_health_all(){
+	for(int i=0;i<MAX_NUM_ENEMY;i++){
+		if((vector_enemy[i].hp<=0)&&(vector_enemy[i].alivep)){
+			create_flare(vector_enemy[i].x,
+					vector_enemy[i].y,
+					50, 100, 300);
+			vector_enemy[i].alivep=0;
+		}
 	}
 }
 
@@ -603,6 +610,7 @@ void refresh(int x)
 
 	{ // Enemy
 		moving_all_enemy();
+		check_enemy_health_all();
 	}
 
 	{ // Game
