@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <math.h>
 
+int window_width;
+int window_height;
 
 void create_flare(int x, int y, int r_begin, int r_end, int life_time);
 void game_reset();
@@ -464,6 +466,7 @@ void game_reset(){
 
 void display(void)
 {
+	glViewport(0,0, window_width, window_height);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glLoadIdentity();
@@ -490,6 +493,19 @@ void display(void)
 	show_bullet_all();
 	show_enemy_all();
 	show_flare_all();
+
+	glViewport(0,0, window_width, window_height);
+	glColor3f(1.0 ,1.0 ,0.0);
+	glPushMatrix();
+		glRasterPos2f(250,130);
+		glcRenderString("Hello, World");
+	glPopMatrix();
+	glColor3f(0.0 ,1.0 ,0.0);
+	glBegin(GL_TRIANGLES);
+		glVertex2i(200,130);
+		glVertex2i(250,130);
+		glVertex2i(200,180);
+	glEnd();
 
 	glutSwapBuffers();
 }
@@ -624,6 +640,9 @@ void refresh(int x)
 
 void reshape_func(int w, int h)
 {
+	window_width = w;
+	window_height = h;
+
 	glViewport (0, 0, (GLsizei) w, (GLsizei) h);
 
 	/*
@@ -650,12 +669,14 @@ int main(int argc, char** argv)
 	glutInitWindowPosition (100, 100);
 	glutCreateWindow ("Utah Teapot War");
 	glClearColor (0.0, 0.0, 0.0, 0.0);
-	glShadeModel (GL_FLAT);
 	glutDisplayFunc(display);
 	glutTimerFunc(20, refresh, 0);
 	glutKeyboardUpFunc(keyboard_up);
 	glutKeyboardFunc(keyboard_down);
 	glutReshapeFunc(reshape_func);
+
+	glcContext(glcGenContext());
+	glcScale(30,30);
 
 	game_init();
 
