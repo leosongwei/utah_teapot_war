@@ -494,12 +494,6 @@ void display(void)
 	glutSwapBuffers();
 }
 
-void init(void)
-{
-	glClearColor (0.0, 0.0, 0.0, 0.0);
-	glShadeModel (GL_FLAT);
-}
-
 void teapot_location_limiter(float speed_x, float speed_y){
 	/*
 	if( (teapot_location_x>=-380) && (teapot_location_x <= 380) ){
@@ -655,7 +649,8 @@ int main(int argc, char** argv)
 	glutInitWindowSize (800, 400);
 	glutInitWindowPosition (100, 100);
 	glutCreateWindow ("Utah Teapot War");
-	init ();
+	glClearColor (0.0, 0.0, 0.0, 0.0);
+	glShadeModel (GL_FLAT);
 	glutDisplayFunc(display);
 	glutTimerFunc(20, refresh, 0);
 	glutKeyboardUpFunc(keyboard_up);
