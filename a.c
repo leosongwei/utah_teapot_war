@@ -69,16 +69,6 @@ void openfire_player()
 int keeping_player_firingp=0;
 void check_fire_status_player()
 {
-	/*
-	if(keys['j']){
-		openfire_player();
-		keeping_player_firingp=1;
-	}else{
-		keeping_player_firingp=0;
-	}
-	*/
-
-	//if(keeping_player_firingp=1){
 	if(keys['j']){
 		openfire_player();
 	}
@@ -480,14 +470,6 @@ void display(void)
 		glTranslatef(teapot_location_x, teapot_location_y, 0);
 		glutWireTeapot(50);
 		glPopMatrix();
-
-		/*
-		glColor3f(1.0, 1.0, 1.0);
-		glPushMatrix();
-		glTranslatef(teapot_location_x, teapot_location_y, 0);
-		glutWireCube(100);
-		glPopMatrix();
-		*/
 	}
 
 	show_bullet_all();
@@ -511,15 +493,6 @@ void display(void)
 }
 
 void teapot_location_limiter(float speed_x, float speed_y){
-	/*
-	if( (teapot_location_x>=-380) && (teapot_location_x <= 380) ){
-		teapot_location_x += speed_x;
-	}
-	if( (teapot_location_y>=-180) && (teapot_location_y <= 200) ){
-		teapot_location_y += speed_y;
-	}
-	*/
-
 	if( (speed_x>0) && (teapot_location_x>380) ) speed_x = 0;
 	if( (speed_x<0) && (teapot_location_x<-380)) speed_x = 0;
 
@@ -537,34 +510,22 @@ void move_teapot(void)
 
 	if( keys['w'] && keys['a'] ){
 		teapot_location_limiter(-teapot_moving_speed_s, +teapot_moving_speed_s);
-		//teapot_location_x -= teapot_moving_speed_s;
-		//teapot_location_y += teapot_moving_speed_s;
 	}else if( keys['w'] && keys['d'] ){
 		teapot_location_limiter(+teapot_moving_speed_s, +teapot_moving_speed_s);
-		//teapot_location_x += teapot_moving_speed_s;
-		//teapot_location_y += teapot_moving_speed_s;
 	}else if( keys['s'] && keys['a'] ){
 		teapot_location_limiter(-teapot_moving_speed_s, -teapot_moving_speed_s);
-		//teapot_location_x -= teapot_moving_speed_s;
-		//teapot_location_y -= teapot_moving_speed_s;
 	}else if( keys['s'] && keys['d'] ){
 		teapot_location_limiter(+teapot_moving_speed_s, -teapot_moving_speed_s);
-		//teapot_location_x += teapot_moving_speed_s;
-		//teapot_location_y -= teapot_moving_speed_s;
 	}
 	//single
 	else if(keys['w']){
 		teapot_location_limiter(0, +teapot_moving_speed);
-		//teapot_location_y += teapot_moving_speed;
 	}else if(keys['s']){
 		teapot_location_limiter(0, -teapot_moving_speed);
-		//teapot_location_y -= teapot_moving_speed;
 	}else if(keys['a']){
 		teapot_location_limiter(-teapot_moving_speed, 0);
-		//teapot_location_x -= teapot_moving_speed;
 	}else if(keys['d']){
 		teapot_location_limiter(+teapot_moving_speed, 0);
-		//teapot_location_x += teapot_moving_speed;
 	}else{
 		return;
 	}
@@ -635,7 +596,6 @@ void refresh(int x)
 	glutPostRedisplay();
 
 	glutTimerFunc(20, refresh, 0);
-	//printf("hi\n");
 }
 
 void reshape_func(int w, int h)
@@ -644,13 +604,6 @@ void reshape_func(int w, int h)
 	window_height = h;
 
 	glViewport (0, 0, (GLsizei) w, (GLsizei) h);
-
-	/*
-	glLoadIdentity();
-	gluOrtho2D(0,800,0,400);
-	glMatrixMode(GL_MODELVIEW);
-	*/
-
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
