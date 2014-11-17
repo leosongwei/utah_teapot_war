@@ -70,13 +70,11 @@ void openfire_player()
 			5, 0);
 }
 
-int keeping_player_firingp=0;
 void check_fire_status_player()
 {
 	if(keys['j']){
 		openfire_player();
 	}
-	glutTimerFunc(20, check_fire_status_player, 0);
 }
 
 void clear_bullet_all()
@@ -443,7 +441,6 @@ void game_init(void){
 	clear_flare();
 
 
-	check_fire_status_player();
 	enemy_generator();
 }
 
@@ -571,6 +568,7 @@ void refresh(int x)
 	if(!game_pause_p){
 		{ // Teapot
 			move_teapot();
+			check_fire_status_player();
 		}
 
 		{ // Bullets
