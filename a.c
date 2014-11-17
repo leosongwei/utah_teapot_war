@@ -4,8 +4,12 @@
 #include <stdio.h>
 #include <math.h>
 
+#define frame_time 20
+
 int window_width;
 int window_height;
+
+int game_pause_p=0;
 
 void create_flare(int x, int y, int r_begin, int r_end, int life_time);
 void game_reset();
@@ -431,6 +435,7 @@ void show_flare_all(){
 }
 /* ------------------ Flare End -----------------------*/
 
+/* ------------------ Game ----------------------------*/
 void game_init(void){
 	// Clear Memory
 	clear_bullet_all();
@@ -453,6 +458,14 @@ void game_reset(){
 	game_time = 0;
 	kill_counter = 0;
 }
+
+void check_game_pause(){
+	if(keys['p']){
+		game_pause_p = !game_pause_p;
+	}
+}
+
+/* ------------------ Game ----------------------------*/
 
 void display(void)
 {
@@ -533,65 +546,37 @@ void move_teapot(void)
 
 void keyboard_down(unsigned char key, int x, int y)
 {
-	switch(key){
-		case 'w':
-			keys['w']=1;
-			break;
-		case 's':
-			keys['s']=1;
-			break;
-		case 'a':
-			keys['a']=1;
-			break;
-		case 'd':
-			keys['d']=1;
-			break;
-		case 'j':
-			keys['j']=1;
-			break;
-	}
+	keys[key]=1;
 }
 
 void keyboard_up(unsigned char key, int x, int y)
 {
-	switch(key){
-		case 'w':
-			keys['w']=0;
-			break;
-		case 's':
-			keys['s']=0;
-			break;
-		case 'a':
-			keys['a']=0;
-			break;
-		case 'd':
-			keys['d']=0;
-			break;
-		case 'j':
-			keys['j']=0;
-			break;
-	}
+	keys[key]=0;
 }
 
 void refresh(int x)
 {
-	{ // Teapot
-		move_teapot();
+	if(!game_pause_p){
+		{ // Teapot
+			move_teapot();
+		}
+
+		{ // Bullets
+			moving_all_bullet();
+		}
+
+		{ // Enemy
+			moving_all_enemy();
+			check_enemy_health_all();
+		}
+
+		{ // Game
+			check_collision_all();
+			expand_flare_all();
+		}
 	}
 
-	{ // Bullets
-		moving_all_bullet();
-	}
-
-	{ // Enemy
-		moving_all_enemy();
-		check_enemy_health_all();
-	}
-
-	{ // Game
-		check_collision_all();
-		expand_flare_all();
-	}
+	check_game_pause();
 
 	glutPostRedisplay();
 
