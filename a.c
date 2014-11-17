@@ -187,12 +187,12 @@ void create_enemy_randomly(){
 }
 
 int game_time=0;
+int gen_arry[50];
 void enemy_generator(){
 	if(game_time<120){
 		game_time += 5;
 	}
 
-	int gen_arry[50];
 	for(int i=0;i<50;i++) gen_arry[i]=0;
 
 	int i=0;
@@ -227,15 +227,32 @@ void enemy_generator(){
 			}
 		}
 	}
+}
 
-	for(int i=0;i<50;i++){
-		if(gen_arry[i]==1){
-			glutTimerFunc(i*100, create_enemy_randomly, 0);
-		}
+void check_enemy_generator(){
+	static int time_accumulator = 5000;
+	time_accumulator +=20;
+
+	if(time_accumulator>=5000){
+		time_accumulator=0;
+		enemy_generator();
 	}
+}
 
+void generate_enemy(){
+	static int time_accumulator = 0;
+	static int i=0;
 
-	glutTimerFunc(5000, enemy_generator, 0);
+	time_accumulator += 20;
+	if(time_accumulator>=100){
+		time_accumulator = 0;
+		if(i>=50) i = 0;
+
+		if(gen_arry[i]){
+			create_enemy_randomly();
+		}
+		i++;
+	}
 }
 
 void moving_all_enemy()
@@ -440,7 +457,6 @@ void game_init(void){
 	clear_enemy();
 	clear_flare();
 
-
 	enemy_generator();
 }
 
@@ -578,6 +594,8 @@ void refresh(int x)
 		{ // Enemy
 			moving_all_enemy();
 			check_enemy_health_all();
+			generate_enemy();
+			check_enemy_generator();
 		}
 
 		{ // Game
