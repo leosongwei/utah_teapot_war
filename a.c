@@ -460,8 +460,20 @@ void game_reset(){
 }
 
 void check_game_pause(){
-	if(keys['p']){
-		game_pause_p = !game_pause_p;
+	static int stick_time = 0;
+	static int key_dead_time = 0;
+
+	if(key_dead_time>=0){
+		key_dead_time -= frame_time;
+	}
+
+	if(keys['p'] && (key_dead_time<=0)){
+		stick_time+=frame_time;
+		if(stick_time>=50){
+			game_pause_p = !game_pause_p;
+			stick_time = 0;
+			key_dead_time= 300;
+		}
 	}
 }
 
