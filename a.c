@@ -465,6 +465,10 @@ void game_reset(){
 	clear_enemy();
 	clear_flare();
 
+	for(int i=0;i<50;i++){
+		gen_arry[i] = 0;
+	}
+
 	teapot_location_x = -350;
 	teapot_location_y = 0;
 	teapot_alivep = 1;
