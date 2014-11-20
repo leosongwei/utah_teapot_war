@@ -511,30 +511,23 @@ void display(void)
 			0, 0, 0,
 			0, 1, 0);
 
+	const GLfloat teapot_color[] = { 0.7, 0.2, 0.2, 1.0 };
 	if(teapot_alivep){
-		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
+		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, teapot_color);
 		glTranslatef(teapot_location_x, teapot_location_y, 0);
 		glutSolidTeapot(50);
 		glPopMatrix();
 	}
 
+	const GLfloat flare_bullet_color[] = { 0.9, 0.9, 0.0, 1.0 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	show_bullet_all();
-	show_enemy_all();
 	show_flare_all();
 
-	glViewport(0,0, window_width, window_height);
-	glColor3f(1.0 ,1.0 ,0.0);
-	glPushMatrix();
-		glRasterPos2f(250,130);
-		glcRenderString("Hello, World");
-	glPopMatrix();
-	glColor3f(0.0 ,1.0 ,0.0);
-	glBegin(GL_TRIANGLES);
-		glVertex2i(200,130);
-		glVertex2i(250,130);
-		glVertex2i(200,180);
-	glEnd();
+	const GLfloat enemy_color[] = { 0.6, 0.6, 0.6, 1.0 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, enemy_color);
+	show_enemy_all();
 
 	glutSwapBuffers();
 }
@@ -649,7 +642,7 @@ void gl_init(){
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 
-	GLfloat light_color[] = {0.8, 0.8, 0.8, 1};
+	GLfloat light_color[] = {0.8, 0.8, 0.8, 0};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_color);
 }
 
