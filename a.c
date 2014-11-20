@@ -341,7 +341,7 @@ void collision_enemy_and_bullet ( struct enemy *enemy_current ){
 			if( collidedp(x1, y1, x2, y2, xa, ya, xb, yb) ){
 				(*enemy_current).hp -= vector_bullet[i].damage;
 				vector_bullet[i].alivep = 0;
-				create_flare(xb, yb, 5, 40, 100);
+				create_flare(xb - 24, yb, 5, 40, 100);
 			}
 		}
 	}
@@ -648,6 +648,9 @@ void gl_init(){
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
+
+	GLfloat light_color[] = {0.8, 0.8, 0.8, 1};
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_color);
 }
 
 int main(int argc, char** argv)
