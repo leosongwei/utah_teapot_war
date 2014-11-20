@@ -525,7 +525,7 @@ void display(void)
 	show_bullet_all();
 	show_flare_all();
 
-	const GLfloat enemy_color[] = { 0.6, 0.6, 0.6, 1.0 };
+	const GLfloat enemy_color[] = { 0.5, 0.5, 0.5, 1.0 };
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, enemy_color);
 	show_enemy_all();
 
