@@ -285,7 +285,7 @@ void show_enemy(struct enemy *enemy_current){
 	glColor3f(1.0, 1.0, 1.0);
 	glPushMatrix();
 		glTranslatef(x, y, 0);
-		glutWireCube(100);
+		glutSolidCube(100);
 	glPopMatrix();
 }
 
@@ -498,9 +498,14 @@ void check_game_pause(){
 
 void display(void)
 {
-	glViewport(0,0, window_width, window_height);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	GLfloat light0_position[] = { 500 , 500, 1000, 0 };
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+
+	glViewport(0,0, window_width, window_height);
 	glLoadIdentity();
 	gluLookAt(	0, 0, 2000,
 			0, 0, 0,
@@ -510,7 +515,7 @@ void display(void)
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslatef(teapot_location_x, teapot_location_y, 0);
-		glutWireTeapot(50);
+		glutSolidTeapot(50);
 		glPopMatrix();
 	}
 
@@ -632,13 +637,17 @@ void reshape_func(int w, int h)
 }
 
 void gl_init(){
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
+	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize (800, 400);
 	glutInitWindowPosition (100, 100);
 	glutCreateWindow ("Utah Teapot War");
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape_func);
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_DEPTH_TEST);
 }
 
 int main(int argc, char** argv)
