@@ -631,22 +631,25 @@ void reshape_func(int w, int h)
 	glLoadIdentity();
 }
 
-int main(int argc, char** argv)
-{
-	glutInit(&argc, argv);
+void gl_init(){
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize (800, 400);
 	glutInitWindowPosition (100, 100);
 	glutCreateWindow ("Utah Teapot War");
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 	glutDisplayFunc(display);
+	glutReshapeFunc(reshape_func);
+}
+
+int main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+
+	gl_init();
+
 	glutTimerFunc(20, refresh, 0);
 	glutKeyboardUpFunc(keyboard_up);
 	glutKeyboardFunc(keyboard_down);
-	glutReshapeFunc(reshape_func);
-
-	glcContext(glcGenContext());
-	glcScale(30,30);
 
 	game_init();
 
