@@ -1,9 +1,9 @@
-#include <GL/glut.h>
+#include <gl/glut.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
-# define M_PI	3.14159265358979323846	/* GNU pi */
+#define M_PI	3.14159265358979323846	/* GNU pi */
 #define frame_time 20
 
 int window_width;
@@ -57,6 +57,7 @@ float opn=0;
 void openfire_player()
 {
 	float opa;
+	float rand_y;
 	if(opn<2.0){
 		opn+=0.1;
 		opa=2*sin(M_PI*opn);
@@ -64,7 +65,7 @@ void openfire_player()
 		opn=0.0;
 	}
 
-	float rand_y = (float)(rand()%40)/20.0 - 1.0;
+	rand_y=(float)(rand()%40)/20.0 - 1.0;
 	create_bullet(teapot_location_x+90, teapot_location_y+25,
 			30, rand_y + opa,
 			5, 0);
@@ -118,24 +119,25 @@ void moving_all_bullet()
 }
 
 void show_bullet(struct bullet *bullet_current){
+	float x; float y; float v_x; float v_y;
 	if(!((*bullet_current).alivep)){
 		return;
 	}
 
-	float x = (*bullet_current).x;
-	float y = (*bullet_current).y;
-	float v_x = (*bullet_current).v_x;
-	float v_y = (*bullet_current).v_y;
+	x = (*bullet_current).x;
+	y = (*bullet_current).y;
+	v_x = (*bullet_current).v_x;
+	v_y = (*bullet_current).v_y;
 
 	glVertex3f(x, y, 0);
 	glVertex3f(x-v_x, y-v_y, 0);
 }
 
 void show_bullet_all(){
+	int i;
 	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	glBegin(GL_LINES);
-	int i;
 	for(i=0;i<MAX_NUM_BULLET;i++){
 		show_bullet( &(vector_bullet[i]) );
 	}
@@ -196,6 +198,7 @@ void create_enemy_randomly(){
 int game_time=0;
 int gen_arry[50];
 void enemy_generator(){
+	int c; int fip; int limit;
 	int i;
 	if(game_time<120){
 		game_time += 5;
@@ -204,9 +207,9 @@ void enemy_generator(){
 	for(i=0;i<50;i++) gen_arry[i]=0;
 	i=0;
 
-	int c=0;
-	int fip=0;
-	int limit=5+game_time/3;
+	c=0;
+	fip=0;
+	limit=5+game_time/3;
 	while(i<=200){
 		int slot=rand()%50;
 		if(gen_arry[slot]==0){
@@ -304,16 +307,17 @@ float* enemy_color_get(int type){
 }
 
 void show_enemy(struct enemy *enemy_current){
-	int i;
+	int i; float x; float y;
+	float *color_vector_template;
+	GLfloat color_vector[4];
 	if(!((*enemy_current).alivep)){
 		return;
 	}
 
-	float x = (*enemy_current).x;
-	float y = (*enemy_current).y;
+	x = (*enemy_current).x;
+	y = (*enemy_current).y;
 
-	GLfloat color_vector[4];
-	float *color_vector_template=enemy_color_get((*enemy_current).type);
+	color_vector_template=enemy_color_get((*enemy_current).type);
 	for(i=0;i<4;i++){
 		color_vector[i]=color_vector_template[i];
 	}
@@ -483,9 +487,9 @@ void show_flare(struct flare flare_current){
 }
 
 void show_flare_all(){
+	int i;
 	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
-	int i;
 	for(i=0;i<MAX_NUM_FLARE;i++){
 		if(vector_flare[i].alivep){
 			show_flare(vector_flare[i]);
@@ -504,12 +508,12 @@ void game_init(void){
 	enemy_generator();
 }
 
-void game_reset(){
+void game_reset(int wc){
+	int i;
 	clear_bullet_all();
 	clear_enemy();
 	clear_flare();
 
-	int i;
 	for(i=0;i<50;i++){
 		gen_arry[i] = 0;
 	}
@@ -543,9 +547,10 @@ void check_game_pause(){
 
 void display(void)
 {
+	const GLfloat teapot_color[] = { 0.7, 0.2, 0.2, 1.0 };
+	GLfloat light0_position[] = { 500 , 500, 1000, 0 };
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	GLfloat light0_position[] = { 500 , 500, 1000, 0 };
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
@@ -556,7 +561,6 @@ void display(void)
 			0, 0, 0,
 			0, 1, 0);
 
-	const GLfloat teapot_color[] = { 0.7, 0.2, 0.2, 1.0 };
 	if(teapot_alivep){
 		glPushMatrix();
 		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, teapot_color);
@@ -670,10 +674,11 @@ void reshape_func(int w, int h)
 }
 
 void gl_init(){
+	GLfloat light_color[] = {0.8, 0.8, 0.8, 0};
 	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize (800, 400);
 	glutInitWindowPosition (100, 100);
-	glutCreateWindow ("Utah Teapot War");
+	glutCreateWindow ("Utah Teapot War 4 Windows");
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape_func);
@@ -682,7 +687,6 @@ void gl_init(){
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
 
-	GLfloat light_color[] = {0.8, 0.8, 0.8, 0};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_color);
 }
 
