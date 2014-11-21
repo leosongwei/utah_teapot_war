@@ -79,14 +79,16 @@ void check_fire_status_player()
 
 void clear_bullet_all()
 {
-	for(int i=0; i<MAX_NUM_BULLET; i++){
+	int i;
+	for(i=0; i<MAX_NUM_BULLET; i++){
 		vector_bullet[i] = null_bullet;
 	}
 }
 
 void clear_bullet_evil()
 {
-	for(int i=0; i<MAX_NUM_BULLET; i++){
+	int i;
+	for(i=0; i<MAX_NUM_BULLET; i++){
 		if(vector_bullet[i].evilp){
 			vector_bullet[i] = null_bullet;
 		}
@@ -96,14 +98,15 @@ void clear_bullet_evil()
 void moving_all_bullet()
 {
 	struct bullet *bullet_current;
-	for(int i=0; i<MAX_NUM_BULLET; i++){
+	int i;
+	for(i=0; i<MAX_NUM_BULLET; i++){
 		if(vector_bullet[i].alivep){
 			bullet_current = &vector_bullet[i];
-			// Fucking C language
+			/* Fucking C language */
 			(*bullet_current).x += (*bullet_current).v_x;
 			(*bullet_current).y += (*bullet_current).v_y;
 
-			// Shutdown bullet
+			/* Shutdown bullet */
 			if( ((*bullet_current).x >= 480) ||
 				((*bullet_current).x <= -410) ||
 				((*bullet_current).y >= 250) ||
@@ -132,7 +135,8 @@ void show_bullet_all(){
 	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	glBegin(GL_LINES);
-	for(int i=0;i<MAX_NUM_BULLET;i++){
+	int i;
+	for(i=0;i<MAX_NUM_BULLET;i++){
 		show_bullet( &(vector_bullet[i]) );
 	}
 	glEnd();
@@ -158,7 +162,8 @@ struct enemy null_enemy={0,0, 0,0, 0,0, 0};
 struct enemy vector_enemy[MAX_NUM_ENEMY];
 
 void clear_enemy(){
-	for(int i=0;i<MAX_NUM_ENEMY;i++){
+	int i=0;
+	for(i=0;i<MAX_NUM_ENEMY;i++){
 		vector_enemy[i]=null_enemy;
 	}
 }
@@ -191,13 +196,14 @@ void create_enemy_randomly(){
 int game_time=0;
 int gen_arry[50];
 void enemy_generator(){
+	int i;
 	if(game_time<120){
 		game_time += 5;
 	}
 
-	for(int i=0;i<50;i++) gen_arry[i]=0;
+	for(i=0;i<50;i++) gen_arry[i]=0;
+	i=0;
 
-	int i=0;
 	int c=0;
 	int fip=0;
 	int limit=5+game_time/3;
@@ -219,7 +225,7 @@ void enemy_generator(){
 	/* Must make the algorithm convergence*/
 	if(fip==0){
 		int to_do = limit-c;
-		for(int i=0;i<50;i++){
+		for(i=0;i<50;i++){
 			if(to_do<=0){
 				break;
 			}
@@ -259,12 +265,13 @@ void generate_enemy(){
 
 void moving_all_enemy()
 {
-	for(int i=0; i<MAX_NUM_ENEMY; i++){
+	int i;
+	for(i=0; i<MAX_NUM_ENEMY; i++){
 		if(vector_enemy[i].alivep){
 			vector_enemy[i].x += vector_enemy[i].v_x;
 			vector_enemy[i].y += vector_enemy[i].v_y;
 
-			// Shutdown enemy
+			/* Shutdown enemy */
 			if( (vector_enemy[i].x >= 510) ||
 				(vector_enemy[i].x <= -510) ||
 				(vector_enemy[i].y >= 280) ||
@@ -297,6 +304,7 @@ float* enemy_color_get(int type){
 }
 
 void show_enemy(struct enemy *enemy_current){
+	int i;
 	if(!((*enemy_current).alivep)){
 		return;
 	}
@@ -306,7 +314,7 @@ void show_enemy(struct enemy *enemy_current){
 
 	GLfloat color_vector[4];
 	float *color_vector_template=enemy_color_get((*enemy_current).type);
-	for(int i=0;i<4;i++){
+	for(i=0;i<4;i++){
 		color_vector[i]=color_vector_template[i];
 	}
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color_vector);
@@ -318,14 +326,16 @@ void show_enemy(struct enemy *enemy_current){
 }
 
 void show_enemy_all(){
-	for(int i=0;i<MAX_NUM_ENEMY;i++){
+	int i;
+	for(i=0;i<MAX_NUM_ENEMY;i++){
 		show_enemy( &vector_enemy[i]);
 	}
 }
 
 int kill_counter=0;
 void check_enemy_health_all(){
-	for(int i=0;i<MAX_NUM_ENEMY;i++){
+	int i;
+	for(i=0;i<MAX_NUM_ENEMY;i++){
 		if((vector_enemy[i].hp<=0)&&(vector_enemy[i].alivep)){
 			create_flare(vector_enemy[i].x,
 					vector_enemy[i].y,
@@ -359,7 +369,8 @@ void collision_enemy_and_bullet ( struct enemy *enemy_current ){
 	int y1 = (*enemy_current).y-enemy_size_2;
 	int x2 = (*enemy_current).x+enemy_size_2;
 	int y2 = (*enemy_current).y+enemy_size_2;
-	for(int i=0; i<MAX_NUM_BULLET; i++){
+	int i;
+	for(i=0; i<MAX_NUM_BULLET; i++){
 		if(vector_bullet[i].alivep){
 			int xa = vector_bullet[i].x-vector_bullet[i].v_x;
 			int ya = vector_bullet[i].y-vector_bullet[i].v_y;
@@ -397,7 +408,8 @@ void collision_enemy_and_teapot( struct enemy *enemy_current ){
 }
 
 void check_collision_all(){
-	for(int i=0; i<MAX_NUM_ENEMY; i++){
+	int i;
+	for(i=0; i<MAX_NUM_ENEMY; i++){
 		if(vector_enemy[i].alivep){
 			collision_enemy_and_bullet( &vector_enemy[i] );
 			collision_enemy_and_teapot( &vector_enemy[i] );
@@ -423,7 +435,8 @@ struct flare null_flare={0, 0, 0, 0, 0, 0, 0};
 struct flare vector_flare[MAX_NUM_FLARE];
 
 void clear_flare(){
-	for(int i=0;i<MAX_NUM_FLARE;i++){
+	int i;
+	for(i=0;i<MAX_NUM_FLARE;i++){
 		vector_flare[i]=null_flare;
 	}
 }
@@ -439,13 +452,13 @@ void create_flare(int x, int y, int r_begin, int r_end, int life_time){
 	vector_flare[i].r_begin = r_begin;
 	vector_flare[i].r_end = r_end;
 	vector_flare[i].life_time = life_time;
-	vector_flare[i].v_r = (r_end-r_begin)/(life_time/20); // increase r_begin by step
+	vector_flare[i].v_r = (r_end-r_begin)/(life_time/20); /* increase r_begin by step */
 	vector_flare[i].alivep = 1;
 }
 
 void expand_flare(struct flare *flare_current){
 	(*flare_current).r_begin += (*flare_current).v_r;
-	(*flare_current).life_time -= 20; // refresh time
+	(*flare_current).life_time -= 20; /* refresh time */
 
 	/* shutdown flare */
 	if( ((*flare_current).life_time)<=0 ){
@@ -454,7 +467,8 @@ void expand_flare(struct flare *flare_current){
 }
 
 void expand_flare_all(){
-	for(int i=0;i<MAX_NUM_FLARE;i++){
+	int i;
+	for(i=0;i<MAX_NUM_FLARE;i++){
 		if(vector_flare[i].alivep){
 			expand_flare( &vector_flare[i] );
 		}
@@ -471,7 +485,8 @@ void show_flare(struct flare flare_current){
 void show_flare_all(){
 	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
-	for(int i=0;i<MAX_NUM_FLARE;i++){
+	int i;
+	for(i=0;i<MAX_NUM_FLARE;i++){
 		if(vector_flare[i].alivep){
 			show_flare(vector_flare[i]);
 		}
@@ -481,7 +496,7 @@ void show_flare_all(){
 
 /* ------------------ Game ----------------------------*/
 void game_init(void){
-	// Clear Memory
+	/* Clear Memory */
 	clear_bullet_all();
 	clear_enemy();
 	clear_flare();
@@ -494,7 +509,8 @@ void game_reset(){
 	clear_enemy();
 	clear_flare();
 
-	for(int i=0;i<50;i++){
+	int i;
+	for(i=0;i<50;i++){
 		gen_arry[i] = 0;
 	}
 
@@ -581,7 +597,7 @@ void move_teapot(void)
 	}else if( keys['s'] && keys['d'] ){
 		teapot_location_limiter(+teapot_moving_speed_s, -teapot_moving_speed_s);
 	}
-	//single
+	/*single*/
 	else if(keys['w']){
 		teapot_location_limiter(0, +teapot_moving_speed);
 	}else if(keys['s']){
@@ -608,23 +624,23 @@ void keyboard_up(unsigned char key, int x, int y)
 void refresh(int x)
 {
 	if(!game_pause_p){
-		{ // Teapot
+		{ /* Teapot */
 			move_teapot();
 			check_fire_status_player();
 		}
 
-		{ // Bullets
+		{ /* Bullets */
 			moving_all_bullet();
 		}
 
-		{ // Enemy
+		{ /* Enemy */
 			moving_all_enemy();
 			check_enemy_health_all();
 			generate_enemy();
 			check_enemy_generator();
 		}
 
-		{ // Game
+		{ /* Game */
 			check_collision_all();
 			expand_flare_all();
 		}
