@@ -182,9 +182,10 @@ void create_enemy
 
 void create_enemy_randomly(){
 	int y_rand = rand()%480 - 260;
+	int type_rand = rand()%7;
 	create_enemy(500, y_rand,
 			-6, 0,
-			0, 80);
+			type_rand, 80);
 }
 
 int game_time=0;
@@ -275,6 +276,26 @@ void moving_all_enemy()
 	}
 }
 
+float* enemy_color_get(int type){
+	float enemy_color0[] = { 0.1, 0.1, 0.5, 1.0 };
+	float enemy_color1[] = { 0.1, 0.5, 0.1, 1.0 };
+	float enemy_color2[] = { 0.1, 0.5, 0.5, 1.0 };
+	float enemy_color3[] = { 0.5, 0.1, 0.1, 1.0 };
+	float enemy_color4[] = { 0.5, 0.1, 0.5, 1.0 };
+	float enemy_color5[] = { 0.5, 0.5, 0.1, 1.0 };
+	float enemy_color6[] = { 0.5, 0.5, 0.5, 1.0 };
+	float *enemy_color_v[7];
+	enemy_color_v[0]=enemy_color0;
+	enemy_color_v[1]=enemy_color1;
+	enemy_color_v[2]=enemy_color2;
+	enemy_color_v[3]=enemy_color3;
+	enemy_color_v[4]=enemy_color4;
+	enemy_color_v[5]=enemy_color5;
+	enemy_color_v[6]=enemy_color6;
+
+	return enemy_color_v[type];
+}
+
 void show_enemy(struct enemy *enemy_current){
 	if(!((*enemy_current).alivep)){
 		return;
@@ -283,7 +304,13 @@ void show_enemy(struct enemy *enemy_current){
 	float x = (*enemy_current).x;
 	float y = (*enemy_current).y;
 
-	glColor3f(1.0, 1.0, 1.0);
+	GLfloat color_vector[4];
+	float *color_vector_template=enemy_color_get((*enemy_current).type);
+	for(int i=0;i<4;i++){
+		color_vector[i]=color_vector_template[i];
+	}
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color_vector);
+
 	glPushMatrix();
 		glTranslatef(x, y, 0);
 		glutSolidCube(100);
@@ -291,9 +318,6 @@ void show_enemy(struct enemy *enemy_current){
 }
 
 void show_enemy_all(){
-	const GLfloat enemy_color[] = { 0.5, 0.5, 0.5, 1.0 };
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, enemy_color);
-
 	for(int i=0;i<MAX_NUM_ENEMY;i++){
 		show_enemy( &vector_enemy[i]);
 	}
