@@ -124,12 +124,13 @@ void show_bullet(struct bullet *bullet_current){
 	float v_x = (*bullet_current).v_x;
 	float v_y = (*bullet_current).v_y;
 
-	glColor3f(1.0, 1.0, 1.0);
 	glVertex3f(x, y, 0);
 	glVertex3f(x-v_x, y-v_y, 0);
 }
 
 void show_bullet_all(){
+	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	glBegin(GL_LINES);
 	for(int i=0;i<MAX_NUM_BULLET;i++){
 		show_bullet( &(vector_bullet[i]) );
@@ -181,9 +182,10 @@ void create_enemy
 
 void create_enemy_randomly(){
 	int y_rand = rand()%480 - 260;
+	int type_rand = rand()%7;
 	create_enemy(500, y_rand,
 			-6, 0,
-			0, 80);
+			type_rand, 80);
 }
 
 int game_time=0;
@@ -274,6 +276,26 @@ void moving_all_enemy()
 	}
 }
 
+float* enemy_color_get(int type){
+	float enemy_color0[] = { 0.1, 0.1, 0.5, 1.0 };
+	float enemy_color1[] = { 0.1, 0.5, 0.1, 1.0 };
+	float enemy_color2[] = { 0.1, 0.5, 0.5, 1.0 };
+	float enemy_color3[] = { 0.5, 0.1, 0.1, 1.0 };
+	float enemy_color4[] = { 0.5, 0.1, 0.5, 1.0 };
+	float enemy_color5[] = { 0.5, 0.5, 0.1, 1.0 };
+	float enemy_color6[] = { 0.5, 0.5, 0.5, 1.0 };
+	float *enemy_color_v[7];
+	enemy_color_v[0]=enemy_color0;
+	enemy_color_v[1]=enemy_color1;
+	enemy_color_v[2]=enemy_color2;
+	enemy_color_v[3]=enemy_color3;
+	enemy_color_v[4]=enemy_color4;
+	enemy_color_v[5]=enemy_color5;
+	enemy_color_v[6]=enemy_color6;
+
+	return enemy_color_v[type];
+}
+
 void show_enemy(struct enemy *enemy_current){
 	if(!((*enemy_current).alivep)){
 		return;
@@ -282,10 +304,16 @@ void show_enemy(struct enemy *enemy_current){
 	float x = (*enemy_current).x;
 	float y = (*enemy_current).y;
 
-	glColor3f(1.0, 1.0, 1.0);
+	GLfloat color_vector[4];
+	float *color_vector_template=enemy_color_get((*enemy_current).type);
+	for(int i=0;i<4;i++){
+		color_vector[i]=color_vector_template[i];
+	}
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color_vector);
+
 	glPushMatrix();
 		glTranslatef(x, y, 0);
-		glutWireCube(100);
+		glutSolidCube(100);
 	glPopMatrix();
 }
 
@@ -341,7 +369,7 @@ void collision_enemy_and_bullet ( struct enemy *enemy_current ){
 			if( collidedp(x1, y1, x2, y2, xa, ya, xb, yb) ){
 				(*enemy_current).hp -= vector_bullet[i].damage;
 				vector_bullet[i].alivep = 0;
-				create_flare(xb, yb, 5, 40, 100);
+				create_flare(xb - 24, yb, 5, 40, 100);
 			}
 		}
 	}
@@ -434,7 +462,6 @@ void expand_flare_all(){
 }
 
 void show_flare(struct flare flare_current){
-	glColor3f(1.0, 1.0, 1.0);
 	glPushMatrix();
 		glTranslatef(flare_current.x, flare_current.y, 0);
 		glutSolidSphere(flare_current.r_begin, 20, 10);
@@ -442,6 +469,8 @@ void show_flare(struct flare flare_current){
 }
 
 void show_flare_all(){
+	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	for(int i=0;i<MAX_NUM_FLARE;i++){
 		if(vector_flare[i].alivep){
 			show_flare(vector_flare[i]);
@@ -498,38 +527,31 @@ void check_game_pause(){
 
 void display(void)
 {
-	glViewport(0,0, window_width, window_height);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	GLfloat light0_position[] = { 500 , 500, 1000, 0 };
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+
+	glViewport(0,0, window_width, window_height);
 	glLoadIdentity();
 	gluLookAt(	0, 0, 2000,
 			0, 0, 0,
 			0, 1, 0);
 
+	const GLfloat teapot_color[] = { 0.7, 0.2, 0.2, 1.0 };
 	if(teapot_alivep){
-		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
+		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, teapot_color);
 		glTranslatef(teapot_location_x, teapot_location_y, 0);
-		glutWireTeapot(50);
+		glutSolidTeapot(50);
 		glPopMatrix();
 	}
 
 	show_bullet_all();
-	show_enemy_all();
 	show_flare_all();
-
-	glViewport(0,0, window_width, window_height);
-	glColor3f(1.0 ,1.0 ,0.0);
-	glPushMatrix();
-		glRasterPos2f(250,130);
-		glcRenderString("Hello, World");
-	glPopMatrix();
-	glColor3f(0.0 ,1.0 ,0.0);
-	glBegin(GL_TRIANGLES);
-		glVertex2i(200,130);
-		glVertex2i(250,130);
-		glVertex2i(200,180);
-	glEnd();
+	show_enemy_all();
 
 	glutSwapBuffers();
 }
@@ -632,13 +654,20 @@ void reshape_func(int w, int h)
 }
 
 void gl_init(){
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
+	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize (800, 400);
 	glutInitWindowPosition (100, 100);
 	glutCreateWindow ("Utah Teapot War");
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape_func);
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_DEPTH_TEST);
+
+	GLfloat light_color[] = {0.8, 0.8, 0.8, 0};
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, light_color);
 }
 
 int main(int argc, char** argv)
