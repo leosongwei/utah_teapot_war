@@ -124,12 +124,13 @@ void show_bullet(struct bullet *bullet_current){
 	float v_x = (*bullet_current).v_x;
 	float v_y = (*bullet_current).v_y;
 
-	glColor3f(1.0, 1.0, 1.0);
 	glVertex3f(x, y, 0);
 	glVertex3f(x-v_x, y-v_y, 0);
 }
 
 void show_bullet_all(){
+	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	glBegin(GL_LINES);
 	for(int i=0;i<MAX_NUM_BULLET;i++){
 		show_bullet( &(vector_bullet[i]) );
@@ -290,6 +291,9 @@ void show_enemy(struct enemy *enemy_current){
 }
 
 void show_enemy_all(){
+	const GLfloat enemy_color[] = { 0.5, 0.5, 0.5, 1.0 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, enemy_color);
+
 	for(int i=0;i<MAX_NUM_ENEMY;i++){
 		show_enemy( &vector_enemy[i]);
 	}
@@ -434,7 +438,6 @@ void expand_flare_all(){
 }
 
 void show_flare(struct flare flare_current){
-	glColor3f(1.0, 1.0, 1.0);
 	glPushMatrix();
 		glTranslatef(flare_current.x, flare_current.y, 0);
 		glutSolidSphere(flare_current.r_begin, 20, 10);
@@ -442,6 +445,8 @@ void show_flare(struct flare flare_current){
 }
 
 void show_flare_all(){
+	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	for(int i=0;i<MAX_NUM_FLARE;i++){
 		if(vector_flare[i].alivep){
 			show_flare(vector_flare[i]);
@@ -520,13 +525,8 @@ void display(void)
 		glPopMatrix();
 	}
 
-	const GLfloat flare_bullet_color[] = { 0.9, 0.9, 0.0, 1.0 };
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	show_bullet_all();
 	show_flare_all();
-
-	const GLfloat enemy_color[] = { 0.5, 0.5, 0.5, 1.0 };
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, enemy_color);
 	show_enemy_all();
 
 	glutSwapBuffers();
