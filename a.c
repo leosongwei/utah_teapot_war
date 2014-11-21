@@ -1,9 +1,9 @@
 #include <GL/glut.h>
-#include <GL/glc.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
+# define M_PI	3.14159265358979323846	/* GNU pi */
 #define frame_time 20
 
 int window_width;
