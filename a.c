@@ -129,6 +129,7 @@ void show_bullet(struct bullet *bullet_current){
 }
 
 void show_bullet_all(){
+	glLineWidth(2);
 	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	glBegin(GL_LINES);
@@ -136,6 +137,7 @@ void show_bullet_all(){
 		show_bullet( &(vector_bullet[i]) );
 	}
 	glEnd();
+	glLineWidth(1);
 }
 
 /* ------------------ bullet END ----------------------*/
