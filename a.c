@@ -1,5 +1,4 @@
 #include <GL/glut.h>
-#include <GL/glc.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
