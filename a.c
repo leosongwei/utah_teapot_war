@@ -5,6 +5,15 @@
 
 #define frame_time 20
 
+/*
+#define enemy_size_2 50
+#define teapot_size_x_2 50
+#define teapot_size_y_2 40
+*/
+#define enemy_size_2 20
+#define teapot_size_x_2 15
+#define teapot_size_y_2 12
+
 int window_width;
 int window_height;
 
@@ -64,7 +73,8 @@ void openfire_player()
 	}
 
 	float rand_y = (float)(rand()%40)/20.0 - 1.0;
-	create_bullet(teapot_location_x+90, teapot_location_y+25,
+	create_bullet(teapot_location_x + 0.9*teapot_size_x_2,
+			teapot_location_y + teapot_size_y_2,
 			30, rand_y + opa,
 			5, 0);
 }
@@ -314,7 +324,7 @@ void show_enemy(struct enemy *enemy_current){
 
 	glPushMatrix();
 		glTranslatef(x, y, 0);
-		glutSolidCube(100);
+		glutSolidCube(enemy_size_2 * 2);
 	glPopMatrix();
 }
 
@@ -355,7 +365,6 @@ int collidedp(int x1, int y1, int x2, int y2, int xa, int ya, int xb, int yb)
 }
 
 void collision_enemy_and_bullet ( struct enemy *enemy_current ){
-	int enemy_size_2 = 50;
 	int x1 = (*enemy_current).x-enemy_size_2;
 	int y1 = (*enemy_current).y-enemy_size_2;
 	int x2 = (*enemy_current).x+enemy_size_2;
@@ -377,14 +386,11 @@ void collision_enemy_and_bullet ( struct enemy *enemy_current ){
 }
 
 void collision_enemy_and_teapot( struct enemy *enemy_current ){
-	int teapot_size_x_2 = 50;
-	int teapot_size_y_2 = 40;
 	int x1= teapot_location_x - teapot_size_x_2;
 	int y1= teapot_location_y - teapot_size_y_2;
 	int x2= teapot_location_x + teapot_size_x_2;
 	int y2= teapot_location_y + teapot_size_y_2;
 
-	int enemy_size_2 = 50;
 	int xa = (*enemy_current).x-enemy_size_2;
 	int ya = (*enemy_current).y-enemy_size_2;
 	int xb = (*enemy_current).x+enemy_size_2;
@@ -546,7 +552,7 @@ void display(void)
 		glPushMatrix();
 		glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, teapot_color);
 		glTranslatef(teapot_location_x, teapot_location_y, 0);
-		glutSolidTeapot(50);
+		glutSolidTeapot(teapot_size_x_2);
 		glPopMatrix();
 	}
 
@@ -570,8 +576,8 @@ void teapot_location_limiter(float speed_x, float speed_y){
 
 void move_teapot(void)
 {
-	float teapot_moving_speed = 9;
-	float teapot_moving_speed_s = 7;
+	float teapot_moving_speed = 6;
+	float teapot_moving_speed_s = 4.5;
 
 	if( keys['w'] && keys['a'] ){
 		teapot_location_limiter(-teapot_moving_speed_s, +teapot_moving_speed_s);
