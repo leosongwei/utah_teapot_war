@@ -73,8 +73,8 @@ void openfire_player()
 	}
 
 	float rand_y = (float)(rand()%40)/20.0 - 1.0;
-	create_bullet(teapot_location_x + 0.9*teapot_size_x_2,
-			teapot_location_y + teapot_size_y_2,
+	create_bullet(teapot_location_x + 1.2*teapot_size_x_2,
+			teapot_location_y + 0.8*teapot_size_y_2,
 			30, rand_y + opa,
 			5, 0);
 }
