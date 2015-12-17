@@ -44,24 +44,22 @@ struct bullet null_bullet =
 
 struct bullet *bullet_lst;
 
-struct bullet vector_bullet[MAX_NUM_BULLET];
 int counter_bullet = 0;
 
 void create_bullet
 (float x, float y, float v_x, float v_y, int damage, int evilp)
 {
-	int i=0;
-	while( (vector_bullet[i].alivep != 0)
-			&& i<MAX_NUM_BULLET ){
-		i++;
-	}
-	vector_bullet[i].x = x;
-	vector_bullet[i].y = y;
-	vector_bullet[i].v_x = v_x;
-	vector_bullet[i].v_y = v_y;
-	vector_bullet[i].damage = damage;
-	vector_bullet[i].evilp = evilp;
-	vector_bullet[i].alivep = 1;
+	struct bullet *new_bullet = (struct bullet *)malloc(sizeof(struct bullet));
+	new_bullet->x = x;
+	new_bullet->y = y;
+	new_bullet->v_x = v_x;
+	new_bullet->v_y = v_y;
+	new_bullet->damage = damage;
+	new_bullet->evilp = evilp;
+	new_bullet->alivep = 1;
+	new_bullet->next = bullet_lst;
+	bullet_lst = new_bullet;
+
 }
 
 float opn=0;
@@ -89,39 +87,47 @@ void check_fire_status_player()
 	}
 }
 
-void clear_bullet_all()
+void delete_bullet(struct bullet *p)
 {
-	for(int i=0; i<MAX_NUM_BULLET; i++){
-		vector_bullet[i] = null_bullet;
+	struct bullet *prev = bullet_lst;
+	while(prev){
+		if(prev->next == p){
+			prev->next = p->next;
+			free(p);
+			return;
+		}
+		prev = prev->next;
 	}
 }
 
-void clear_bullet_evil()
+void clear_bullet_all()
 {
-	for(int i=0; i<MAX_NUM_BULLET; i++){
-		if(vector_bullet[i].evilp){
-			vector_bullet[i] = null_bullet;
-		}
+	struct bullet *p;
+	struct bullet *now;
+	while(p){
+		now = p;
+		p = p->next;
+		free(now);
 	}
 }
 
 void moving_all_bullet()
 {
-	struct bullet *bullet_current;
-	for(int i=0; i<MAX_NUM_BULLET; i++){
-		if(vector_bullet[i].alivep){
-			bullet_current = &vector_bullet[i];
-			// Fucking C language
-			(*bullet_current).x += (*bullet_current).v_x;
-			(*bullet_current).y += (*bullet_current).v_y;
-
-			// Shutdown bullet
-			if( ((*bullet_current).x >= 480) ||
-				((*bullet_current).x <= -410) ||
-				((*bullet_current).y >= 250) ||
-				((*bullet_current).y <= -210) ){
-				(*bullet_current).alivep=0;
-			}
+	struct bullet *p = bullet_lst;
+	struct bullet *tmp = NULL;
+	while(p){
+		p->x += p->v_x;
+		p->y += p->v_y;
+		/*Shutdown bullet*/
+		if( (p->x >= 480) ||
+				(p->x <= -410) ||
+				(p->y >= 250) ||
+				(p->y <= -210) ){
+			tmp = p->next;
+			delete_bullet(p);
+			p = tmp;
+		}else{
+			p = p->next;
 		}
 	}
 }
@@ -141,13 +147,16 @@ void show_bullet(struct bullet *bullet_current){
 }
 
 void show_bullet_all(){
+	struct bullet *p = bullet_lst;
+
 	glLineWidth(2);
 	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
 	glBegin(GL_LINES);
-	for(int i=0;i<MAX_NUM_BULLET;i++){
-		show_bullet( &(vector_bullet[i]) );
-	}
+		while(p){
+			show_bullet(p);
+			p = p->next;
+		}
 	glEnd();
 	glLineWidth(1);
 }
@@ -293,6 +302,7 @@ void generate_enemy(){
 void moving_all_enemy()
 {
 	struct enemy *p = enemy_lst;
+	struct enemy *tmp = NULL;
 	while(p){
 		//move
 		p->x += p->v_x;
@@ -304,9 +314,12 @@ void moving_all_enemy()
 				(p->y >= 280) ||
 				(p->y <= -280) )
 		{
+			tmp = p->next;
 			delete_enemy(p);
+			p = tmp;
+		} else {
+			p = p->next;
 		}
-		p = p->next;
 	}
 }
 
@@ -358,15 +371,19 @@ void show_enemy_all(){
 int kill_counter=0;
 void check_enemy_health_all(){
 	struct enemy *p = enemy_lst;
+	struct enemy *tmp = NULL;
 	while(p){
 		if(p->hp <= 0){
 			create_flare(p->x,
 					p->y,
 					50, 100, 300);
+			tmp = p->next;
 			delete_enemy(p);
+			p = tmp;
 			kill_counter++;
+		}else{
+			p = p->next;
 		}
-		p = p->next;
 	}
 }
 
@@ -392,18 +409,22 @@ void collision_enemy_and_bullet ( struct enemy *enemy_current ){
 	int y1 = (*enemy_current).y-enemy_size_2;
 	int x2 = (*enemy_current).x+enemy_size_2;
 	int y2 = (*enemy_current).y+enemy_size_2;
-	for(int i=0; i<MAX_NUM_BULLET; i++){
-		if(vector_bullet[i].alivep){
-			int xa = vector_bullet[i].x-vector_bullet[i].v_x;
-			int ya = vector_bullet[i].y-vector_bullet[i].v_y;
-			int xb = vector_bullet[i].x;
-			int yb = vector_bullet[i].y;
+	struct bullet *p = bullet_lst;
+	struct bullet *tmp = NULL;
+	while(p){
+		int xa = p->x - p->v_x;
+		int ya = p->y - p->v_y;
+		int xb = p->x;
+		int yb = p->y;
 
-			if( collidedp(x1, y1, x2, y2, xa, ya, xb, yb) ){
-				(*enemy_current).hp -= vector_bullet[i].damage;
-				vector_bullet[i].alivep = 0;
-				create_flare(xb - 24, yb, 5, 40, 100);
-			}
+		if( collidedp(x1, y1, x2, y2, xa, ya, xb, yb) ){
+			(*enemy_current).hp -= p->damage;
+			tmp = p->next;
+			delete_bullet(p);
+			create_flare(xb - 24, yb, 5, 40, 100);
+			p = tmp;
+		}else{
+			p = p->next;
 		}
 	}
 }
