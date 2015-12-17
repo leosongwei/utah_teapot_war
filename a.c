@@ -89,15 +89,18 @@ void check_fire_status_player()
 
 void delete_bullet(struct bullet *p)
 {
-	struct bullet *prev = bullet_lst;
+	struct bullet head;
+	head.next = bullet_lst;
+	struct bullet *prev = &head;
 	while(prev){
 		if(prev->next == p){
 			prev->next = p->next;
 			free(p);
-			return;
+			break;
 		}
 		prev = prev->next;
 	}
+	bullet_lst = head.next;
 }
 
 void clear_bullet()
@@ -196,16 +199,19 @@ void clear_enemy(){
 
 void delete_enemy(struct enemy *p)
 {
-	struct enemy *prev = enemy_lst;
+	struct enemy head;
+	head.next = enemy_lst;
+	struct enemy *prev = &head;
 	while(prev){
 		if(prev->next == p){
 			prev->next = p->next;
 			free(p);
-			return;
+			break;
 		}else{
 			prev = prev->next;
 		}
 	}
+	enemy_lst = head.next;
 }
 
 void create_enemy
