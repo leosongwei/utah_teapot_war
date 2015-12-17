@@ -36,10 +36,13 @@ struct bullet{
 	int damage;
 	int evilp;
 	int alivep;
+	struct bullet *next;
 };
 
 struct bullet null_bullet =
 { 0, 0, 0, 0, 0, 0, 0};
+
+struct bullet *bullet_lst;
 
 struct bullet vector_bullet[MAX_NUM_BULLET];
 int counter_bullet = 0;
@@ -507,15 +510,6 @@ void show_flare_all(){
 /* ------------------ Flare End -----------------------*/
 
 /* ------------------ Game ----------------------------*/
-void game_init(void){
-	// Clear Memory
-	clear_bullet_all();
-	clear_enemy();
-	clear_flare();
-
-	enemy_generator();
-}
-
 void game_reset(){
 	clear_bullet_all();
 	clear_enemy();
@@ -707,7 +701,7 @@ int main(int argc, char** argv)
 	glutKeyboardUpFunc(keyboard_up);
 	glutKeyboardFunc(keyboard_down);
 
-	game_init();
+	game_reset();
 
 	glutMainLoop();
 	return 0;
