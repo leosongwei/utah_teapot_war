@@ -163,32 +163,51 @@ struct enemy{
 	int type;
 	int alivep;
 	int hp;
+	struct enemy *next;
 };
 
-struct enemy null_enemy={0,0, 0,0, 0,0, 0};
-struct enemy vector_enemy[MAX_NUM_ENEMY];
+struct enemy null_enemy={0,0, 0,0, 0,0, 0, NULL};
+
+struct enemy *enemy_lst = NULL;
 
 void clear_enemy(){
-	for(int i=0;i<MAX_NUM_ENEMY;i++){
-		vector_enemy[i]=null_enemy;
+	struct enemy *p = enemy_lst;
+	struct enemy *next=NULL;
+	while(p){
+		next = p->next;
+		free(p);
+		p = next;
+	}
+	enemy_lst = NULL;
+}
+
+void delete_enemy(struct enemy *p)
+{
+	struct enemy *prev = enemy_lst;
+	while(prev){
+		if(prev->next == p){
+			prev->next = p->next;
+			free(p);
+			return;
+		}else{
+			prev = prev->next;
+		}
 	}
 }
 
 void create_enemy
 (float x, float y, float v_x, float v_y, int type, int hp)
 {
-	int i=0;
-	while( (vector_enemy[i].alivep != 0)
-			&& i<MAX_NUM_ENEMY ){
-		i++;
-	}
-	vector_enemy[i].x = x;
-	vector_enemy[i].y = y;
-	vector_enemy[i].v_x = v_x;
-	vector_enemy[i].v_y = v_y;
-	vector_enemy[i].type = type;
-	vector_enemy[i].alivep = 1;
-	vector_enemy[i].hp = hp;
+	struct enemy *new_enemy = (struct enemy*)malloc(sizeof(struct enemy));
+	new_enemy->x = x;
+	new_enemy->y = y;
+	new_enemy->v_x = v_x;
+	new_enemy->v_y = v_y;
+	new_enemy->type = type;
+	new_enemy->alivep = 1;
+	new_enemy->hp = hp;
+	new_enemy->next = enemy_lst;
+	enemy_lst = new_enemy;
 }
 
 void create_enemy_randomly(){
@@ -270,20 +289,21 @@ void generate_enemy(){
 
 void moving_all_enemy()
 {
-	for(int i=0; i<MAX_NUM_ENEMY; i++){
-		if(vector_enemy[i].alivep){
-			vector_enemy[i].x += vector_enemy[i].v_x;
-			vector_enemy[i].y += vector_enemy[i].v_y;
+	struct enemy *p = enemy_lst;
+	while(p){
+		//move
+		p->x += p->v_x;
+		p->y += p->v_y;
 
-			// Shutdown enemy
-			if( (vector_enemy[i].x >= 510) ||
-				(vector_enemy[i].x <= -510) ||
-				(vector_enemy[i].y >= 280) ||
-				(vector_enemy[i].y <= -280) )
-			{
-				vector_enemy[i].alivep=0;
-			}
+		//shutdown enemy
+		if( 		(p->x >= 510) ||
+				(p->x <= -510) ||
+				(p->y >= 280) ||
+				(p->y <= -280) )
+		{
+			delete_enemy(p);
 		}
+		p = p->next;
 	}
 }
 
@@ -308,10 +328,6 @@ float* enemy_color_get(int type){
 }
 
 void show_enemy(struct enemy *enemy_current){
-	if(!((*enemy_current).alivep)){
-		return;
-	}
-
 	float x = (*enemy_current).x;
 	float y = (*enemy_current).y;
 
@@ -329,21 +345,25 @@ void show_enemy(struct enemy *enemy_current){
 }
 
 void show_enemy_all(){
-	for(int i=0;i<MAX_NUM_ENEMY;i++){
-		show_enemy( &vector_enemy[i]);
+	struct enemy *p = enemy_lst;
+	while(p){
+		show_enemy(p);
+		p = p->next;
 	}
 }
 
 int kill_counter=0;
 void check_enemy_health_all(){
-	for(int i=0;i<MAX_NUM_ENEMY;i++){
-		if((vector_enemy[i].hp<=0)&&(vector_enemy[i].alivep)){
-			create_flare(vector_enemy[i].x,
-					vector_enemy[i].y,
+	struct enemy *p = enemy_lst;
+	while(p){
+		if(p->hp <= 0){
+			create_flare(p->x,
+					p->y,
 					50, 100, 300);
-			vector_enemy[i].alivep=0;
+			delete_enemy(p);
 			kill_counter++;
 		}
+		p = p->next;
 	}
 }
 
@@ -404,11 +424,11 @@ void collision_enemy_and_teapot( struct enemy *enemy_current ){
 }
 
 void check_collision_all(){
-	for(int i=0; i<MAX_NUM_ENEMY; i++){
-		if(vector_enemy[i].alivep){
-			collision_enemy_and_bullet( &vector_enemy[i] );
-			collision_enemy_and_teapot( &vector_enemy[i] );
-		}
+	struct enemy *p = enemy_lst;
+	while(p){
+		collision_enemy_and_teapot(p);
+		collision_enemy_and_bullet(p);
+		p = p->next;
 	}
 }
 
