@@ -100,15 +100,16 @@ void delete_bullet(struct bullet *p)
 	}
 }
 
-void clear_bullet_all()
+void clear_bullet()
 {
-	struct bullet *p;
-	struct bullet *now;
+	struct bullet *p = bullet_lst;
+	struct bullet *now = NULL;
 	while(p){
 		now = p;
 		p = p->next;
 		free(now);
 	}
+	bullet_lst = NULL;
 }
 
 void moving_all_bullet()
@@ -532,7 +533,7 @@ void show_flare_all(){
 
 /* ------------------ Game ----------------------------*/
 void game_reset(){
-	clear_bullet_all();
+	clear_bullet();
 	clear_enemy();
 	clear_flare();
 
