@@ -475,64 +475,91 @@ struct flare{
 	int life_time;
 	int v_r;
 	int alivep;
+	struct flare *next;
 };
 
 struct flare null_flare={0, 0, 0, 0, 0, 0, 0};
 struct flare vector_flare[MAX_NUM_FLARE];
 
+struct flare *flare_lst = NULL;
+
 void clear_flare(){
-	for(int i=0;i<MAX_NUM_FLARE;i++){
-		vector_flare[i]=null_flare;
+	struct flare *p = flare_lst;
+	struct flare *next=NULL;
+	while(p){
+		next = p->next;
+		free(p);
+		p = next;
 	}
+	flare_lst = NULL;
 }
 
-void create_flare(int x, int y, int r_begin, int r_end, int life_time){
-	int i=0;
-	while( (vector_flare[i].alivep != 0)
-			&& i<MAX_NUM_FLARE ){
-		i++;
+void delete_flare(struct flare *p){
+	struct flare head;
+	head.next = flare_lst;
+	struct flare *prev = &head;
+	while(prev){
+		if(prev->next == p){
+			prev->next = p->next;
+			free(p);
+			break;
+		}else{
+			prev = prev->next;
+		}
 	}
-	vector_flare[i].x = x;
-	vector_flare[i].y = y;
-	vector_flare[i].r_begin = r_begin;
-	vector_flare[i].r_end = r_end;
-	vector_flare[i].life_time = life_time;
-	vector_flare[i].v_r = (r_end-r_begin)/(life_time/20); // increase r_begin by step
-	vector_flare[i].alivep = 1;
+	flare_lst = head.next;
 }
 
-void expand_flare(struct flare *flare_current){
-	(*flare_current).r_begin += (*flare_current).v_r;
-	(*flare_current).life_time -= 20; // refresh time
+void create_flare
+(int x, int y, int r_begin, int r_end, int life_time){
+	struct flare *new =
+		(struct flare*)malloc(sizeof(struct flare));
 
-	/* shutdown flare */
-	if( ((*flare_current).life_time)<=0 ){
-		(*flare_current).alivep = 0;
-	}
+	new->x = x;
+	new->y = y;
+	new->r_begin = r_begin;
+	new->r_end = r_end;
+	new->life_time = life_time;
+	// increase r_begin by step
+	new->v_r = (r_end-r_begin)/(life_time/20);
+	new->alivep = 1;
+	new->next = flare_lst;
+	flare_lst = new;
 }
 
 void expand_flare_all(){
-	for(int i=0;i<MAX_NUM_FLARE;i++){
-		if(vector_flare[i].alivep){
-			expand_flare( &vector_flare[i] );
+	struct flare *p = flare_lst;
+	struct flare *tmp = NULL;
+	while(p){
+		// expand flare
+		p->r_begin += p->v_r;
+		p->life_time -= 20;
+
+		// shutdown flare
+		if(p->life_time <= 0){
+			tmp = p->next;
+			delete_flare(p);
+			p = tmp;
+		}else{
+			p = p->next;
 		}
 	}
 }
 
-void show_flare(struct flare flare_current){
+void show_flare(struct flare *flare_current){
 	glPushMatrix();
-		glTranslatef(flare_current.x, flare_current.y, 0);
-		glutSolidSphere(flare_current.r_begin, 20, 10);
+		glTranslatef(flare_current->x, flare_current->y, 0);
+		glutSolidSphere(flare_current->r_begin, 20, 10);
 	glPopMatrix();
 }
 
 void show_flare_all(){
+	struct flare *p = flare_lst;
 	const GLfloat flare_bullet_color[] = { 1, 1, 0.0, 1.0 };
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, flare_bullet_color);
-	for(int i=0;i<MAX_NUM_FLARE;i++){
-		if(vector_flare[i].alivep){
-			show_flare(vector_flare[i]);
-		}
+	while(p){
+		show_flare(p);
+		p = p->next;
 	}
 }
 /* ------------------ Flare End -----------------------*/
