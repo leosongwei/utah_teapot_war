@@ -231,7 +231,7 @@ void create_enemy
 
 void create_enemy_randomly(){
 	int y_rand = rand()%480 - 260;
-	int type_rand = rand()%7;
+	int type_rand = rand()%3;
 	create_enemy(500, y_rand,
 			-6, 0,
 			type_rand, 80);
@@ -396,6 +396,138 @@ void check_enemy_health_all(){
 
 /* ------------------ Enemy END -----------------------*/
 
+/* ------------------ Enemy Bullet --------------------*/
+
+struct enemy_bullet{
+	float x;
+	float y;
+	float v_x;
+	float v_y;
+	int type;
+	struct enemy_bullet *next;
+};
+
+struct enemy_bullet *enemy_bullet_lst = NULL;
+
+void delete_enemy_bullet(struct enemy_bullet *p)
+{
+	struct enemy_bullet head;
+	head.next = enemy_bullet_lst;
+	struct enemy_bullet *prev = &head;
+	while(prev){
+		if(prev->next == p){
+			prev->next = p->next;
+			free(p);
+			break;
+		}
+		prev = prev->next;
+	}
+	enemy_bullet_lst = head.next;
+}
+
+void clear_enemy_bullet(){
+	struct enemy_bullet *p = enemy_bullet_lst;
+	struct enemy_bullet *next=NULL;
+	while(p){
+		next = p->next;
+		free(p);
+		p = next;
+	}
+	enemy_bullet_lst = NULL;
+}
+
+void create_enemy_bullet
+(float x, float y, float v_x, float v_y, int type)
+{
+	struct enemy_bullet *new =
+		(struct enemy_bullet*)
+		malloc(sizeof(struct enemy_bullet));
+	new->x = x;
+	new->y = y;
+	new->v_x = v_x;
+	new->v_y = v_y;
+	new->type = type;
+	new->next = enemy_bullet_lst;
+	enemy_bullet_lst = new;
+}
+
+void enemy_fire_bullet_all()
+{
+	struct enemy *p = enemy_lst;
+	while(p){
+		if(p->type == 2){
+			float x = p->x;
+			float y = p->y;
+			float a = teapot_location_x;
+			float b = teapot_location_y;
+			float dis = sqrtf(
+					powf(a-x, 2)
+					+ powf(b-y, 2));
+			float v = 5;
+			float ratio = v/dis;
+			float v_x = (a-x)*ratio;
+			float v_y = (b-y)*ratio;
+
+			create_enemy_bullet
+				(p->x,
+				 p->y,
+				 v_x,
+				 v_y,
+				 2);
+		}
+		p = p->next;
+	}
+}
+
+void moving_all_enemy_bullet()
+{
+	struct enemy_bullet *p = enemy_bullet_lst;
+	struct enemy_bullet *tmp = NULL;
+	while(p){
+		p->x += p->v_x;
+		p->y += p->v_y;
+		/*Shutdown bullet*/
+		if( (p->x >= 480) ||
+				(p->x <= -410) ||
+				(p->y >= 250) ||
+				(p->y <= -210) ){
+			tmp = p->next;
+			delete_enemy_bullet(p);
+			p = tmp;
+		}else{
+			p = p->next;
+		}
+	}
+}
+
+void show_enemy_bullet(struct enemy_bullet *p){
+	float x = p->x;
+	float y = p->y;
+
+	GLfloat color_vector[4];
+	float *color_vector_template=enemy_color_get(p->type);
+	for(int i=0;i<4;i++){
+		color_vector[i]=color_vector_template[i];
+	}
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color_vector);
+
+	glPushMatrix();
+		glTranslatef(x, y, 0);
+		glutSolidSphere(1, 10, 10);
+	glPopMatrix();
+}
+
+void show_enemy_bullet_all()
+{
+	struct enemy_bullet *p = enemy_bullet_lst;
+	while(p){
+		show_enemy_bullet(p);
+		p = p->next;
+	}
+}
+
+/* ------------------ Enemy Bullet END ----------------*/
+
 /* ------------------ Collision -----------------------*/
 
 int collidedp(int x1, int y1, int x2, int y2, int xa, int ya, int xb, int yb)
@@ -454,6 +586,26 @@ void collision_enemy_and_teapot( struct enemy *enemy_current ){
 	}
 }
 
+void collision_enemy_bullet_and_teapot(){
+	int x = teapot_location_x;
+	int y = teapot_location_y;
+
+	int bx; int by;
+	float distance_power_2;
+
+	struct enemy_bullet *p = enemy_bullet_lst;
+	while(p){
+		bx = p->x;
+		by = p->y;
+		distance_power_2 = powf(bx-x, 2) + powf(by-y, 2);
+		if(distance_power_2 <= powf(teapot_size_x_2/2, 2)){
+			teapot_alivep=0;
+			create_flare(teapot_location_x, teapot_location_y, 30, 300, 500);
+			glutTimerFunc(500, game_reset, 0);
+		}
+	}
+}
+
 void check_collision_all(){
 	struct enemy *p = enemy_lst;
 	while(p){
@@ -461,6 +613,7 @@ void check_collision_all(){
 		collision_enemy_and_bullet(p);
 		p = p->next;
 	}
+	collision_enemy_bullet_and_teapot();
 }
 
 /* ------------------ Collision END -------------------*/
@@ -569,6 +722,7 @@ void game_reset(){
 	clear_bullet();
 	clear_enemy();
 	clear_flare();
+	clear_enemy_bullet();
 
 	for(int i=0;i<50;i++){
 		gen_arry[i] = 0;
@@ -628,6 +782,7 @@ void display(void)
 	show_bullet_all();
 	show_flare_all();
 	show_enemy_all();
+	show_enemy_bullet_all();
 
 	glutSwapBuffers();
 }
@@ -681,6 +836,7 @@ void keyboard_up(unsigned char key, int x, int y)
 	keys[key]=0;
 }
 
+int enemy_fire_timer = 0;
 void refresh(int x)
 {
 	if(!game_pause_p){
@@ -694,7 +850,13 @@ void refresh(int x)
 		}
 
 		{ // Enemy
+			enemy_fire_timer += 20;
+			if(enemy_fire_timer>=1000){
+				enemy_fire_bullet_all();
+				enemy_fire_timer = 0;
+			}
 			moving_all_enemy();
+			moving_all_enemy_bullet();
 			check_enemy_health_all();
 			generate_enemy();
 			check_enemy_generator();
