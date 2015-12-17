@@ -513,7 +513,7 @@ void show_enemy_bullet(struct enemy_bullet *p){
 
 	glPushMatrix();
 		glTranslatef(x, y, 0);
-		glutSolidSphere(1, 10, 10);
+		glutSolidSphere(4, 10, 10);
 	glPopMatrix();
 }
 
@@ -603,6 +603,7 @@ void collision_enemy_bullet_and_teapot(){
 			create_flare(teapot_location_x, teapot_location_y, 30, 300, 500);
 			glutTimerFunc(500, game_reset, 0);
 		}
+		p = p->next;
 	}
 }
 
