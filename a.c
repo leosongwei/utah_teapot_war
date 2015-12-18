@@ -232,8 +232,9 @@ void create_enemy
 void create_enemy_randomly(){
 	int y_rand = rand()%480 - 260;
 	int type_rand = rand()%7;
+	float enemy_speed = -4;
 	create_enemy(500, y_rand,
-			-6, 0,
+			enemy_speed, 0,
 			type_rand, 80);
 }
 
@@ -488,7 +489,7 @@ void enemy_fire_bullet_all()
 
 			float tan = (b-y)/(a-x);
 			float angle = atanf(tan);
-			float v = 5;
+			float v = 2;
 			float v_x = fabs(cosf(angle)) * xs * v;
 			float v_y = fabs(sinf(angle)) * ys * v;
 
