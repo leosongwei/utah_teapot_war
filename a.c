@@ -231,7 +231,7 @@ void create_enemy
 
 void create_enemy_randomly(){
 	int y_rand = rand()%480 - 260;
-	int type_rand = rand()%3;
+	int type_rand = rand()%7;
 	create_enemy(500, y_rand,
 			-6, 0,
 			type_rand, 80);
@@ -460,20 +460,45 @@ void enemy_fire_bullet_all()
 			float y = p->y;
 			float a = teapot_location_x;
 			float b = teapot_location_y;
-			float dis = sqrtf(
-					powf(a-x, 2)
-					+ powf(b-y, 2));
-			float v = 5;
-			float ratio = v/dis;
-			float v_x = (a-x)*ratio;
-			float v_y = (b-y)*ratio;
+			int xs = 1; int ys = 1;
+			if(a-x < 0){ xs = -1; }
+			if(b-y < 0){ ys = -1; }
 
+			float tan = (b-y)/(a-x);
+			float angle = atanf(tan);
+			float v = 5;
+			float v_x = fabs(cosf(angle)) * xs * v;
+			float v_y = fabs(sinf(angle)) * ys * v;
+
+			/* 普通惯性系狙击弹 */
+			create_enemy_bullet
+				(p->x,
+				 p->y,
+				 v_x + p->v_x, // 注意这里的区别！
+				 v_y,
+				 p->type);
+		}else if(p->type == 6){
+			float x = p->x;
+			float y = p->y;
+			float a = teapot_location_x;
+			float b = teapot_location_y;
+			int xs = 1; int ys = 1;
+			if(a-x < 0){ xs = -1; }
+			if(b-y < 0){ ys = -1; }
+
+			float tan = (b-y)/(a-x);
+			float angle = atanf(tan);
+			float v = 5;
+			float v_x = fabs(cosf(angle)) * xs * v;
+			float v_y = fabs(sinf(angle)) * ys * v;
+
+			/* 惯性系错觉自机狙！ */
 			create_enemy_bullet
 				(p->x,
 				 p->y,
 				 v_x,
 				 v_y,
-				 2);
+				 p->type);
 		}
 		p = p->next;
 	}
