@@ -3,6 +3,8 @@ README.md
 
 Depend on freeglut. Please install freeglut and freeglut-dev.
 
+Support Linux and OSX.
+
 Just `make` it.
 
 ```
