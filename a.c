@@ -107,12 +107,6 @@ void delete_bullet(struct bullet *p)
 
 void clear_bullet()
 {
-	struct bullet *p = bullet_lst;
-	struct bullet *now = NULL;
-	while(p){
-		now = p;
-		p = p->next;
-	}
 	bullet_lst = NULL;
 }
 
@@ -188,12 +182,6 @@ struct enemy null_enemy={0,0, 0,0, 0,0, 0, NULL};
 struct enemy *enemy_lst = NULL;
 
 void clear_enemy(){
-	struct enemy *p = enemy_lst;
-	struct enemy *next=NULL;
-	while(p){
-		next = p->next;
-		p = next;
-	}
 	enemy_lst = NULL;
 }
 
@@ -425,12 +413,6 @@ void delete_enemy_bullet(struct enemy_bullet *p)
 }
 
 void clear_enemy_bullet(){
-	struct enemy_bullet *p = enemy_bullet_lst;
-	struct enemy_bullet *next=NULL;
-	while(p){
-		next = p->next;
-		p = next;
-	}
 	enemy_bullet_lst = NULL;
 }
 
@@ -661,12 +643,6 @@ struct flare vector_flare[MAX_NUM_FLARE];
 struct flare *flare_lst = NULL;
 
 void clear_flare(){
-	struct flare *p = flare_lst;
-	struct flare *next=NULL;
-	while(p){
-		next = p->next;
-		p = next;
-	}
 	flare_lst = NULL;
 }
 
