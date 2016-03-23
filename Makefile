@@ -11,7 +11,7 @@ endif
 
 CLIB=-lm
 
-CFLAGS=$(STD) $(GL) $(CLIB) $(HEADER) -Wall
+CFLAGS=$(STD) $(GL) $(CLIB) $(HEADER) -lgc -Wall
 
 main: a.c
 	gcc a.c -o main $(CFLAGS)

@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <math.h>
 
+#include <gc/gc.h>
+#define malloc(n) GC_malloc(n)
+
 #define frame_time 20
 
 /*
@@ -95,7 +98,6 @@ void delete_bullet(struct bullet *p)
 	while(prev){
 		if(prev->next == p){
 			prev->next = p->next;
-			free(p);
 			break;
 		}
 		prev = prev->next;
@@ -105,13 +107,6 @@ void delete_bullet(struct bullet *p)
 
 void clear_bullet()
 {
-	struct bullet *p = bullet_lst;
-	struct bullet *now = NULL;
-	while(p){
-		now = p;
-		p = p->next;
-		free(now);
-	}
 	bullet_lst = NULL;
 }
 
@@ -187,13 +182,6 @@ struct enemy null_enemy={0,0, 0,0, 0,0, 0, NULL};
 struct enemy *enemy_lst = NULL;
 
 void clear_enemy(){
-	struct enemy *p = enemy_lst;
-	struct enemy *next=NULL;
-	while(p){
-		next = p->next;
-		free(p);
-		p = next;
-	}
 	enemy_lst = NULL;
 }
 
@@ -205,7 +193,6 @@ void delete_enemy(struct enemy *p)
 	while(prev){
 		if(prev->next == p){
 			prev->next = p->next;
-			free(p);
 			break;
 		}else{
 			prev = prev->next;
@@ -418,7 +405,6 @@ void delete_enemy_bullet(struct enemy_bullet *p)
 	while(prev){
 		if(prev->next == p){
 			prev->next = p->next;
-			free(p);
 			break;
 		}
 		prev = prev->next;
@@ -427,13 +413,6 @@ void delete_enemy_bullet(struct enemy_bullet *p)
 }
 
 void clear_enemy_bullet(){
-	struct enemy_bullet *p = enemy_bullet_lst;
-	struct enemy_bullet *next=NULL;
-	while(p){
-		next = p->next;
-		free(p);
-		p = next;
-	}
 	enemy_bullet_lst = NULL;
 }
 
@@ -664,13 +643,6 @@ struct flare vector_flare[MAX_NUM_FLARE];
 struct flare *flare_lst = NULL;
 
 void clear_flare(){
-	struct flare *p = flare_lst;
-	struct flare *next=NULL;
-	while(p){
-		next = p->next;
-		free(p);
-		p = next;
-	}
 	flare_lst = NULL;
 }
 
@@ -681,7 +653,6 @@ void delete_flare(struct flare *p){
 	while(prev){
 		if(prev->next == p){
 			prev->next = p->next;
-			free(p);
 			break;
 		}else{
 			prev = prev->next;
