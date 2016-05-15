@@ -4,7 +4,7 @@
 #include <math.h>
 
 #include <gc/gc.h>
-#define malloc(n) GC_malloc(n)
+#define malloc(n) GC_MALLOC(n)
 
 #define frame_time 20
 
